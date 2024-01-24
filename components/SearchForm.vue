@@ -1,42 +1,64 @@
 <template>
-  <div class="search-container">
-    <label class="search-container__label" for="doggie-search">Token ID</label>
+  <div class="search">
+    <label class="search__label" for="doggie-search">Token ID</label>
     <input
       v-model="search"
-      class="search-container__input"
-      :class="{ 'search-container__input--disabled': isLoading }"
+      class="search__input"
+      :class="{ 'search__input--disabled': isLoading }"
       type="text"
       name="search"
       autocomplete="false"
       :disabled="isLoading"
       required
     />
-    <button class="search-container__button" @click="handleOnClick()">Search</button>
+    <div class="search__cta">
+      <button
+        class="search__cta__button search__cta__button--outlined"
+        :class="{ 'search__cta__button--disabled': isLoading }"
+        @click="handleOnRandom()"
+      >
+        Random Search
+      </button>
+      <button
+        class="search__cta__button"
+        :class="{ 'search__cta__button--disabled': isLoading }"
+        @click="handleOnSearch(search)"
+      >
+        Search
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 
-const props = defineProps({
-  handleSearch: {
+defineProps({
+  isLoading: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  handleOnSearch: {
+    type: Function,
+    required: true,
+  },
+  handleOnRandom: {
     type: Function,
     required: true,
   },
 });
 
-const isLoading = false;
 const search = ref('');
-
-const handleOnClick = () => props.handleSearch(search.value);
 </script>
 
 <style lang="scss" scoped>
-.search-container {
+.search {
   display: flex;
   flex-direction: column;
   gap: 12px;
   width: 300px;
+  margin: 24px 0;
   &__label {
     color: #3a3b3f;
     font-size: 16px;
@@ -66,23 +88,46 @@ const handleOnClick = () => props.handleSearch(search.value);
       }
     }
   }
-  &__button {
-    width: 100%;
-    padding: 10px;
-    cursor: pointer;
-    text-align: center;
-    color: $basic-white;
-    font-size: 12px;
-    line-height: 12px;
-    border: 1px solid transparent;
-    border-radius: $border-radius;
-    background-color: $button-color;
-    transition: 0.1s linear background-color;
-    &:hover {
-      background-color: $button-color-hover;
-    }
-    &:active {
-      background-color: $button-color-active;
+  &__cta {
+    display: flex;
+    gap: 16px;
+    &__button {
+      width: 100%;
+      padding: 10px;
+      cursor: pointer;
+      text-align: center;
+      color: $basic-white;
+      font-size: 12px;
+      line-height: 12px;
+      border: 1px solid transparent;
+      border-radius: $border-radius;
+      background-color: $button-color;
+      transition: 0.1s linear background-color;
+      &:hover {
+        background-color: $button-color-hover;
+      }
+      &:active {
+        background-color: $button-color-active;
+      }
+      &--disabled {
+        color: $basic-white;
+        background-color: #9fd8f1;
+        pointer-events: none;
+        cursor: not-allowed;
+      }
+      &--outlined {
+        color: #006aac;
+        border-color: #006aac;
+        background-color: transparent;
+        &:hover {
+          color: $basic-white;
+          background-color: #006aac;
+        }
+        &--disabled {
+          color: #9fd8f1;
+          border: 1px solid #9fd8f1;
+        }
+      }
     }
   }
 }
