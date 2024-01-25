@@ -5,9 +5,8 @@
     <input
       v-model="search"
       :class="{ '--disabled': isLoading }"
-      type="text"
+      type="search"
       name="search"
-      autocomplete="false"
       :disabled="isLoading"
       required
     />
@@ -19,8 +18,16 @@
         Random Search
       </button>
 
-      <button :class="{ '--disabled': isLoading }" :disabled="isLoading" @click="handleOnSearch(search)">Search</button>
+      <button
+        :class="{ '--disabled': isLoading || !search }"
+        :disabled="isLoading || !search"
+        @click="handleOnSearch(search)"
+      >
+        Search
+      </button>
     </div>
+
+    <div v-if="isLoading" class="search__loading">Loading...</div>
   </div>
 </template>
 
@@ -48,7 +55,8 @@ defineProps({
   },
 });
 
-const search = ref(6314n);
+// 6314
+const search = ref('');
 </script>
 
 <style lang="scss" scoped>
@@ -57,13 +65,17 @@ const search = ref(6314n);
   flex-direction: column;
   gap: 12px;
   width: 300px;
-  margin: 24px 0;
+  margin: 32px 0 40px;
   &__error {
     color: $error;
   }
   &__cta {
     display: flex;
     gap: 16px;
+  }
+  &__loading {
+    text-align: center;
+    margin-top: 28px;
   }
 }
 </style>
