@@ -1,7 +1,6 @@
 <template>
   <div class="container">
-    <h1>The Doggies Explorer</h1>
-    <p>Contract Result: {{ contractResult }}</p>
+    <h1 class="container__title">The Doggies Explorer</h1>
 
     <SearchForm
       :is-loading="isLoading"
@@ -10,80 +9,95 @@
       :error="error"
     />
 
-    <NuxtPage />
+    <DoggieDetails v-if="tokenUri" :token-uri="tokenUri" :token-owner="tokenOwner" />
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
 import Web3 from 'web3';
 import theDoggies from '../assets/json/the-doggies.json';
 
-export default {
-  name: 'App',
-  data() {
-    return {
-      isLoading: false,
-      contract: null,
-      connected: false,
-      contractResult: '',
-      error: '',
-    };
-  },
-  mounted() {
-    const web3 = new Web3(window.ethereum);
-    const contractAddress = theDoggies.address;
-    const abi = theDoggies.abi;
-    this.contract = new web3.eth.Contract(abi, contractAddress);
-  },
-  methods: {
-    handleOnSearch: async function (value) {
-      try {
-        this.isLoading = true;
-        this.contractResult = '';
+const isLoading = ref(false);
+const tokenUri = ref('');
+const tokenOwner = ref('');
+const error = ref('');
 
-        const result = await this.callTokenURI(value);
+let contract = null;
 
-        this.isLoading = false;
-        this.contractResult = result;
-      } catch (error) {
-        this.isLoading = false;
-        this.error = error.message;
-      }
-    },
-    handleOnRandom: async function () {
-      try {
-        this.isLoading = true;
-        this.contractResult = '';
+onMounted(() => {
+  const web3 = new Web3(window.ethereum);
+  const contractAddress = theDoggies.address;
+  const abi = theDoggies.abi;
+  contract = new web3.eth.Contract(abi, contractAddress);
+});
 
-        const events = await this.callGetPastEvents();
-        const tokenIDList = this.getTokens(events);
-        const tokenID = this.getRandomToken(tokenIDList);
-        const result = await this.callTokenURI(tokenID);
+const handleOnSearch = async (value) => {
+  try {
+    isLoading.value = true;
+    tokenUri.value = '';
 
-        this.isLoading = false;
-        this.contractResult = result;
-      } catch (error) {
-        this.isLoading = false;
-        this.error = error.message;
-      }
-    },
-    callGetPastEvents: async function () {
-      return await this.contract.getPastEvents('Transfer', {
-        fromBlock: '0xD90C71',
-        toBlock: '0xD9950F',
-      });
-    },
-    callTokenURI: async function (tokenID) {
-      return await this.contract.methods.tokenURI(tokenID).call();
-    },
-    getTokens: (events) =>
-      events.reduce((acc, { returnValues }) => {
-        acc.push(returnValues.tokenId);
-        return acc;
-      }, []),
-    getRandomToken: (tokenIDList) => tokenIDList[Math.floor(Math.random() * tokenIDList.length)],
-  },
+    const tokenUriResult = await callTokenURI(value);
+    const tokenOwnerResult = await callTokenOwner(value);
+
+    isLoading.value = false;
+    tokenUri.value = tokenUriResult;
+    tokenOwner.value = tokenOwnerResult;
+  } catch (error) {
+    isLoading.value = false;
+    error.value = error.message;
+  }
 };
+
+const handleOnRandom = async () => {
+  try {
+    isLoading.value = true;
+    tokenUri.value = '';
+
+    const events = await callGetPastEvents();
+    const tokenIDList = getTokens(events);
+    const tokenID = getRandomToken(tokenIDList);
+
+    const tokenUriResult = await callTokenURI(tokenID);
+    const tokenOwnerResult = await callTokenOwner(tokenID);
+
+    isLoading.value = false;
+    tokenUri.value = tokenUriResult;
+    tokenOwner.value = tokenOwnerResult;
+  } catch (error) {
+    isLoading.value = false;
+    error.value = error.message;
+  }
+};
+
+const callGetPastEvents = async () => {
+  return await contract.getPastEvents('Transfer', {
+    fromBlock: '0xD90C71',
+    toBlock: '0xD9950F',
+  });
+};
+
+const callTokenURI = async (tokenID) => {
+  return await contract.methods.tokenURI(tokenID).call();
+};
+
+const callTokenOwner = async (tokenID) => {
+  return await contract.methods.ownerOf(tokenID).call();
+};
+
+const getTokens = (events) =>
+  events.reduce((acc, { returnValues }) => {
+    acc.push(returnValues.tokenId);
+    return acc;
+  }, []);
+
+const getRandomToken = (tokenIDList) => tokenIDList[Math.floor(Math.random() * tokenIDList.length)];
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.container {
+  &__title {
+    margin: 0;
+  }
+}
+</style>
