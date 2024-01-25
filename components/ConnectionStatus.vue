@@ -19,21 +19,52 @@ import { ref } from 'vue';
 const isLoading = ref(false);
 const connected = ref(false);
 
+onMounted(() => {
+  checkConnection();
+});
+
+async function checkConnection() {
+  try {
+    if (window.ethereum) {
+      isLoading.value = true;
+
+      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+
+      isLoading.value = false;
+      connected.value = accounts.length > 0;
+    }
+  } catch (error) {
+    isLoading.value = false;
+    // eslint-disable-next-line no-console
+    console.error(error.message);
+  }
+}
+
 async function connect() {
-  // this connects to the wallet
-  if (window.ethereum) {
-    isLoading.value = true;
-    // first we check if metamask is installed
-    await window.ethereum.request({ method: 'eth_requestAccounts' }).then(() => {
+  try {
+    // this connects to the wallet
+    if (window.ethereum) {
+      isLoading.value = true;
+
+      // first we check if metamask is installed
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+
       isLoading.value = false;
       connected.value = true;
-    });
+    }
+  } catch (error) {
+    isLoading.value = false;
+    // eslint-disable-next-line no-console
+    console.error(error.message);
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .status {
+  position: absolute;
+  top: 18px;
+  right: 16px;
   display: flex;
   align-items: center;
   justify-content: center;

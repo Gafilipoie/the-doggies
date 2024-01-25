@@ -34,6 +34,8 @@ h1 {
 p {
   margin: 20px 0;
   color: #3a3b3f;
+  font-size: 18px;
+  line-height: 25px;
 }
 
 a {
@@ -45,6 +47,17 @@ label {
   color: #3a3b3f;
   font-size: 16px;
   line-height: 22px;
+}
+
+small {
+  color: #ccc;
+  font-size: 8px;
+}
+
+hr {
+  width: 100%;
+  margin: 0;
+  background-color: #bdbdbd;
 }
 
 button {
@@ -133,8 +146,34 @@ input {
   }
 }
 
+table {
+  width: 100%;
+  thead {
+    tr {
+      th {
+        padding: 12px 0;
+        text-align: left;
+        border-bottom: 1px solid #1f1f1f;
+        border-spacing: 20px 0;
+      }
+    }
+  }
+  tbody {
+    tr {
+      td {
+        padding: 8px 0;
+        text-align: left;
+        border-bottom: 1px solid #cccccc;
+      }
+    }
+  }
+}
+
 .container {
   display: flex;
   align-items: center;
   flex-direction: column;
+  width: 768px;
+  padding: 24px;
+  margin: 0 auto;
 }
