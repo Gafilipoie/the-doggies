@@ -8,9 +8,7 @@
         </ul>
       </nav>
 
-      <div class="connection-status-wrapper">
-        <ConnectionStatus />
-      </div>
+      <ConnectionStatus />
     </header>
 
     <div>
@@ -22,11 +20,15 @@
 <style lang="scss" scoped>
 .header {
   position: relative;
+  padding: 16px 24px;
+  border-bottom: 1px solid #ccc;
+  box-shadow: 1px 1px 4px rgba(2, 2, 2, 0.2);
   .header__nav {
     padding: 0 1rem;
     .header__nav__list {
       list-style-type: none;
       padding: 0;
+      margin: 0;
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
@@ -39,12 +41,6 @@
         }
       }
     }
-  }
-
-  .connection-status-wrapper {
-    position: absolute;
-    top: 2px;
-    right: 16px;
   }
 }
 </style>
