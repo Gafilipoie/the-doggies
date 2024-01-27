@@ -69,6 +69,7 @@ export default {
       this.isLoading = false;
     },
     parseDescription(description) {
+      // in order to remove ** Doggie {tokenID} ** from the description
       return description
         .split('**')
         .filter((x) => x)[1]
