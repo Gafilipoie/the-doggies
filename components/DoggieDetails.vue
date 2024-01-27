@@ -1,19 +1,19 @@
 <template>
-  <div v-if="isLoading">Loading...</div>
+  <div v-if="!details">Loading...</div>
 
-  <div v-if="!isLoading" class="details">
+  <div v-if="!!details" class="details">
     <div class="details__bio">
       <div class="details__bio__avatar">
-        <NuxtLink :to="data.animation_url" target="_blank"><img :src="data.image_url" /></NuxtLink>
+        <NuxtLink :to="details.animation_url" target="_blank"><img :src="details.image_url" /></NuxtLink>
       </div>
       <div class="details__bio__info">
         <h2 class="details__bio__info__name">
-          {{ data.name }}
+          {{ details.name }}
           <small class="details__bio__info__name__owner">Owner: {{ tokenOwner }}</small>
         </h2>
 
         <p class="details__bio__info__description">
-          {{ data.description }}
+          {{ details.description }}
         </p>
       </div>
     </div>
@@ -27,7 +27,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(attribute, index) in data.attributes" :key="index">
+          <tr v-for="(attribute, index) in details.attributes" :key="index">
             <td>{{ attribute.trait_type }}</td>
             <td>{{ attribute.value || '-' }}</td>
           </tr>
@@ -36,41 +36,43 @@
     </div>
   </div>
 </template>
+<script>
+import axios from 'axios';
 
-<script setup>
-import { ref, onMounted } from 'vue';
-
-const props = defineProps({
-  tokenUri: {
-    type: String,
-    required: true,
-    default: '',
+export default {
+  name: 'DoggieDetails',
+  props: {
+    tokenUri: {
+      type: String,
+      required: true,
+      default: '',
+    },
+    tokenOwner: {
+      type: String,
+      required: true,
+      default: '',
+    },
   },
-  tokenOwner: {
-    type: String,
-    required: true,
-    default: '',
+  data() {
+    return {
+      isLoading: false,
+      details: null,
+    };
   },
-});
+  methods: {
+    async fetchData() {
+      this.isLoading = true;
 
-const isLoading = ref(false);
-const data = ref({});
+      const response = await axios.get(this.tokenUri);
 
-onMounted(async () => {
-  try {
-    isLoading.value = true;
-
-    const {
-      data: { _rawValue },
-    } = await useFetch(props.tokenUri);
-    data.value = _rawValue;
-
-    isLoading.value = false;
-  } catch (error) {
-    isLoading.value = false;
-    error.value = error.message;
-  }
-});
+      this.details = response?.data;
+      this.isLoading = false;
+    },
+  },
+  beforeMount() {
+    this.fetchData();
+  },
+};
 </script>
 
 <style lang="scss" scoped>

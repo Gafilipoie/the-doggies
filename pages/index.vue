@@ -5,6 +5,8 @@
 </template>
 
 <script setup>
+import { useHead } from 'nuxt';
+
 useHead({ title: 'Home' });
 </script>
 

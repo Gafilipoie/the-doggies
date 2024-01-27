@@ -4,17 +4,18 @@
       class="status__button --link"
       :class="{ '--disabled': isLoading || connected }"
       :disabled="isLoading || connected"
-      @click="connect"
+      @click="connect()"
+      data-testid="connect-button"
     >
       {{ connected ? 'Connected' : 'Connect' }}
     </button>
 
-    <div class="status__icon" :class="{ 'status__icon--connected': connected }" />
+    <div class="status__icon" :class="{ 'status__icon--connected': connected }" data-testid="connect-icon" />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const isLoading = ref(false);
 const connected = ref(false);
@@ -48,7 +49,6 @@ async function connect() {
 
       // first we check if metamask is installed
       await window.ethereum.request({ method: 'eth_requestAccounts' });
-
       isLoading.value = false;
       connected.value = true;
     }
