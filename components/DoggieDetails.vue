@@ -13,7 +13,7 @@
         </h2>
 
         <p class="details__bio__info__description">
-          {{ details.description }}
+          {{ parseDescription(details.description) }}
         </p>
       </div>
     </div>
@@ -67,6 +67,12 @@ export default {
 
       this.details = response?.data;
       this.isLoading = false;
+    },
+    parseDescription(description) {
+      return description
+        .split('**')
+        .filter((x) => x)[1]
+        .trim();
     },
   },
   beforeMount() {
